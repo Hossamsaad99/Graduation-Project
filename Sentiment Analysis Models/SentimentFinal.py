@@ -528,9 +528,9 @@ Result
 
 		                                         LogisticRegression	SupportVectorClassifier	DecisionTree	KNeighborsClassifier
 FeatureExtraction  	Metric				
-Bi-grams	          Accuracy Training %	           80.79	            80.73                	82.28	            80.84
-                    Accuracy Testing  %	           80.32	            80.42	                80.50	            77.61
-Tri-grams	          Accuracy Training %	           77.80	            77.80	                78.23	            77.54
-                    Accuracy Testing  %            77.53	            77.74	                77.59           	75.99
-TFIDF	              Accuracy Training %	           97.06	            98.89	                99.97            	99.96
-                    Accuracy Testing  %	           95.22	            97.83                	98.63	            87.05
+Bi-grams	       Accuracy Training %	           80.79	            80.73                	82.28	            80.84
+                       Accuracy Testing  %	           80.32	            80.42	                80.50	            77.61
+Tri-grams	       Accuracy Training %	           77.80	            77.80	                78.23	            77.54
+                       Accuracy Testing  %                 77.53	            77.74	                77.59               75.99
+TFIDF	               Accuracy Training %	           97.06	            98.89	                99.97               99.96
+                       Accuracy Testing  %	           95.22	            97.83                	98.63	            87.05
