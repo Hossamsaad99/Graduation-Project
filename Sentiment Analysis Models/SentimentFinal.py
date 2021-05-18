@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Sentiment Analysis For Stock Data
-
-# ## Data Preparation
-
-# In[1]:
 
 
 ''' install required libraries '''
@@ -62,7 +54,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 
 
-# In[2]:
 
 
 # Reading Datasets
@@ -70,21 +61,15 @@ stocks=pd.read_csv('C:/Users/user/Desktop/Sentiment/stocks_cleaned.csv')
 Data=pd.read_csv('C:/Users/user/Desktop/Sentiment/stockerbot-export.csv',error_bad_lines=False)
 
 
-# In[3]:
-
-
-Data.head()
-
 
 # ### Exploratory data analysis
 
-# In[4]:
 
 
 Data.info()
 
 
-# In[5]:
+
 
 
 '''Convert Columns data types '''
@@ -98,13 +83,11 @@ Data["source"] = Data["source"].astype("category")
 Data=Data.drop(columns=['id'])
 
 
-# In[6]:
-
 
 Data.info()
 
 
-# In[7]:
+
 
 
 ''' Split Timestamp Column into Dates and times '''
@@ -114,27 +97,17 @@ Data[['hour','minute','second']] = Data.time.str.split(':',expand=True)
 Data.head(2)
 
 
-# In[8]:
+
 
 
 ''' Check for null values '''
 Data.isnull().any() 
 
 
-# There are a null values in Company Names Column
-
-# In[9]:
-
-
 ''' Check for null values in Company names columns '''
 
 print(f'null :{Data.company_names.isnull().sum()}')
 Data[Data['company_names'].isnull()] 
-
-
-# Only One Null Values , so not important for us to delete or not
-
-# In[10]:
 
 
 # Take a look at 10 Largest Source 
@@ -144,8 +117,6 @@ plt.figure(figsize=(15,5))
 # total_sources.head(50).sort_values(ascending=False).plot(kind='bar') 
 
 
-# In[11]:
-
 
 # Take a look at 10 Largest symbols 
 total_companies = Data["symbols"].value_counts()
@@ -154,13 +125,10 @@ plt.figure(figsize=(15,5))
 # total_companies.head(50).sort_values(ascending=False).plot(kind='bar') 
 
 
-# In[12]:
 
 
 len(Data.text)
 
-
-# In[13]:
 
 
 # Delete Unwanted Some Text 
@@ -169,7 +137,6 @@ Data=Data[Data["text"]!='btc']
 
 # ### Pre-Processing Text
 
-# In[14]:
 
 
 # Define Clean Function to fix text
@@ -217,48 +184,36 @@ def Clean(text):
   return text
 
 
-# In[15]:
-
 
 # Text Before Pre-processing
 Data.text
 
-
-# In[16]:
 
 
 #Delete unwanted source form our text 
 Data=Data[Data["source"] != "test5f1798"]
 
 
-# In[17]:
+
 
 
 # apply Clean Funsction to our Text
 Data.text=[Clean(x) for x in Data.text]
 
 
-# In[18]:
-
 
 Data.text
 
-
-# In[19]:
 
 
 # Delete Unwanted Some Text 
 Data=Data[Data["text"]!='btc']
 
 
-# In[20]:
-
 
 # Text after Pre-processing
 Data.text
 
-
-# In[21]:
 
 
 ''' Detect Emotions for each text Form TextBlob Library '''
@@ -287,19 +242,8 @@ Data['Polarity']=detectPolarity
 Data['Emotion'] =detectEmotion
 
 
-# In[22]:
-
-
-# Data.head(3)
-
-
-# In[23]:
-
 
 # Data  = Data[Data['verified'] == True]
-
-
-# In[24]:
 
 
 #check for valid string only to detect languages
@@ -314,15 +258,9 @@ print(len(Data[Data['valid']==False]))
 print(len(Data[Data['valid']==True]))
 
 
-# In[25]:
-
-
 # valid string only
 
 Data=Data[Data['valid']==True]
-
-
-# In[26]:
 
 
 '''Detect languages for each text to filter into specific Lang'''
@@ -340,32 +278,15 @@ languages = [str(lang).split(':')[0][1:] for lang in languages]
 Data['language'] = languages
 
 
-# In[27]:
-
 
 # look at Lang detected from our text
 
 Data['language'].value_counts()
 
 
-# In[28]:
-
-
-# len(Data)
-
-
-# In[29]:
-
-
 # We Only want to deal with english text for now , so we will filter data for EN Only
 
 Data=Data[Data['language']=='en']
-
-
-# In[30]:
-
-
-# len(Data)
 
 
 # In[31]:
@@ -374,17 +295,6 @@ Data=Data[Data['language']=='en']
 Data=Data[['text','url','year','month','day','dayofweek','hour','minute','second','source','symbols','Polarity','Emotion','language','verified']]
 Data.head(4)
 
-
-# In[32]:
-
-
-apple=Data[['text','year','month','day','Polarity','Emotion']][Data.symbols=='AAPL']
-apple
-
-
-# In[33]:
-
-
 # Percentage of each Emotions for apple only
 
 app_neutral   = apple['text'][ apple['Emotion'] == '0']
@@ -392,9 +302,6 @@ app_positive = apple['text'][ apple['Emotion'] == '1']
 app_negative = apple['text'][ apple['Emotion'] == '2']
 
 print(f' Percentage Positive: {len(app_positive)/len(apple)}\n Percentage Negetive: {len(app_negative)/len(apple)}\n Percentage Neutral : {len(app_neutral)/len(apple)}')
-
-
-# In[34]:
 
 
 # the below function will create a word cloud
@@ -418,20 +325,12 @@ def wordcloud_draw(data, color = 'black'):
     plt.show()
   
 
-
-# In[35]:
-
-
 print("Most Positive words Frequency")
 wordcloud_draw(app_positive, 'white')
 print("Most Negative words Frequency")
 wordcloud_draw(app_negative)
 print("Most Neutral words Frequency")
 wordcloud_draw(app_neutral, 'white')
-
-
-# In[36]:
-
 
 # Percentage of each Emotions overall symbols
 
@@ -442,10 +341,6 @@ df_negative  = Data['text'][ Data['Emotion'] == '2']
 
 print(f' Percentage Positive: {len(df_positive)/len(Data)}\n Percentage Negetive: {len(df_negative)/len(Data)}\n Percentage Neutral: {len(df_neutral)/len(Data)}')
 
-
-# In[37]:
-
-
 print("Most Positive words Frequency")
 wordcloud_draw(df_positive, 'white')
 print("Most Negative words Frequency")
@@ -453,17 +348,11 @@ wordcloud_draw(df_negative)
 print("Most Neutral words Frequency")
 wordcloud_draw(df_neutral, 'white')
 
-
-# In[38]:
-
-
 # Save Dataset
 Data.to_csv("MystockData.csv",index = False)
 
 
-# ## Model
-
-# In[39]:
+### Model
 
 
 def NgramModels(Model , txt, n):
@@ -499,7 +388,6 @@ def NgramModels(Model , txt, n):
     print('\n --------------------------------------------------------------------------------------------------- \n')
 
 
-# In[40]:
 
 
 def KNN_Ngram(n):
@@ -538,8 +426,6 @@ def KNN_Ngram(n):
         print('\n -------------------------------------------------------------------------------------- \n')
 
 
-# In[41]:
-
 
 def TFIDFModels(Model,txt):
     
@@ -572,8 +458,6 @@ def TFIDFModels(Model,txt):
     print('Negative: ', report['2'])
     print('\n -------------------------------------------------------------------------------------- \n')
 
-
-# In[42]:
 
 
 def KNN_TFIDF():
@@ -610,7 +494,6 @@ def KNN_TFIDF():
         print('\n -------------------------------------------------------------------------------------- \n')
 
 
-# In[43]:
 
 
 SupportVectorClassifier=svm.SVC(kernel='linear')
@@ -628,7 +511,6 @@ KNN2=KNN_Ngram(2)
 KNN3=KNN_Ngram(3)
 
 
-# In[44]:
 
 
 SupportVectorClassifier=svm.SVC(kernel='linear')
@@ -642,21 +524,13 @@ DecTree=TFIDFModels(Model=tree.DecisionTreeClassifier(),txt='Decision Tree Class
 knn_tfidf=KNN_TFIDF()
 
 
-# In[47]:
-
-
-idx = pd.MultiIndex.from_product([['2-grams', '3-grams', 'TFIDF'],['Accuracy %']],names=['FeatureExtraction', 'Metric'])
-col = ['LogisticRegression', 'SupportVectorClassifier', 'DecisionTree', 'KNeighborsClassifier']
-
-Result = pd.DataFrame('*', idx, col)
-Result.LogisticRegression=['81','78','95']
-Result.SupportVectorClassifier=['81','78','98']
-Result.DecisionTree=['81','78','99']
-Result.KNeighborsClassifier=['79','77','87']
-
-
-# In[48]:
-
-
 Result
 
+		                                         LogisticRegression	SupportVectorClassifier	DecisionTree	KNeighborsClassifier
+FeatureExtraction  	Metric				
+Bi-grams	          Accuracy Training %	           80.79	            80.73                	82.28	            80.84
+                    Accuracy Testing  %	           80.32	            80.42	                80.50	            77.61
+Tri-grams	          Accuracy Training %	           77.80	            77.80	                78.23	            77.54
+                    Accuracy Testing  %            77.53	            77.74	                77.59           	75.99
+TFIDF	              Accuracy Training %	           97.06	            98.89	                99.97            	99.96
+                    Accuracy Testing  %	           95.22	            97.83                	98.63	            87.05
