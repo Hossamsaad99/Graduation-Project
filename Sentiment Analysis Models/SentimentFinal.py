@@ -60,16 +60,9 @@ from sklearn.metrics import classification_report
 stocks=pd.read_csv('C:/Users/user/Desktop/Sentiment/stocks_cleaned.csv')
 Data=pd.read_csv('C:/Users/user/Desktop/Sentiment/stockerbot-export.csv',error_bad_lines=False)
 
-
-
-# ### Exploratory data analysis
-
-
+# Exploratory data analysis
 
 Data.info()
-
-
-
 
 
 '''Convert Columns data types '''
@@ -82,22 +75,11 @@ Data["symbols"] = Data["symbols"].astype("category")
 Data["source"] = Data["source"].astype("category")
 Data=Data.drop(columns=['id'])
 
-
-
-Data.info()
-
-
-
-
-
 ''' Split Timestamp Column into Dates and times '''
 
 Data[['dayofweek','month','day','time','timezone', 'year']] = Data.timestamp.str.split(expand=True)
 Data[['hour','minute','second']] = Data.time.str.split(':',expand=True)
 Data.head(2)
-
-
-
 
 
 ''' Check for null values '''
@@ -123,21 +105,12 @@ total_companies = Data["symbols"].value_counts()
 print(f'Most companies:\n{total_companies.nlargest(10)}')
 plt.figure(figsize=(15,5))
 # total_companies.head(50).sort_values(ascending=False).plot(kind='bar') 
-
-
-
-
 len(Data.text)
-
-
 
 # Delete Unwanted Some Text 
 Data=Data[Data["text"]!='btc']
 
-
-# ### Pre-Processing Text
-
-
+# Pre-Processing Text
 
 # Define Clean Function to fix text
 def Clean(text):
@@ -148,18 +121,15 @@ def Clean(text):
   # removing unwanted digits ,special chracters from the text
   text= ' '.join(re.sub("(@[A-Za-z0-9]+)", " ", text).split()) #tags
   text= ' '.join(re.sub("^@?(\w){1,15}$", " ", text).split())
-    
   text= ' '.join(re.sub("(\w+:\/\/\S+)", " ", text).split())   #Links
   text= ' '.join(re.sub("http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\), ]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"," ", text).split()) 
   text= ' '.join(re.sub(r'http\S+', '',text).split())
-  
-  
   text= ' '.join(re.sub(r'www\S+', '',text).split())
   text= ' '.join(re.sub("\s+", " ",text).split()) #Extrem white Space
   text= ' '.join(re.sub("[^-9A-Za-z ]", "" ,text).split()) #digits 
   text= ' '.join(re.sub('-', ' ', text).split()) 
   text= ' '.join(re.sub('_', ' ', text).split()) #underscore 
-  
+ 
   # Display available PUNCTUATION for examples
   #for c in string.punctuation:
        #print(f"[{c}]")
@@ -183,38 +153,16 @@ def Clean(text):
     
   return text
 
-
-
 # Text Before Pre-processing
 Data.text
 
-
-
 #Delete unwanted source form our text 
 Data=Data[Data["source"] != "test5f1798"]
-
-
-
-
-
 # apply Clean Funsction to our Text
 Data.text=[Clean(x) for x in Data.text]
 
-
-
-Data.text
-
-
-
 # Delete Unwanted Some Text 
 Data=Data[Data["text"]!='btc']
-
-
-
-# Text after Pre-processing
-Data.text
-
-
 
 ''' Detect Emotions for each text Form TextBlob Library '''
 
@@ -227,11 +175,11 @@ for txt in Data.text:
     Polarity=analysis.sentiment.polarity
     
     if Polarity  <0:
-        emotion='2'  #Negative
+        emotion ='2'  #Negative
     elif Polarity>0: 
-        emotion='1'  #Positive
+        emotion ='1'  #Positive
     else:
-        emotion='0'  #Neutral
+        emotion ='0'  #Neutral
         
     detectEmotion.append(emotion)
     detectPolarity.append(Polarity)
@@ -240,10 +188,6 @@ for txt in Data.text:
 
 Data['Polarity']=detectPolarity
 Data['Emotion'] =detectEmotion
-
-
-
-# Data  = Data[Data['verified'] == True]
 
 
 #check for valid string only to detect languages
@@ -257,11 +201,9 @@ Data['valid']=TextValid
 print(len(Data[Data['valid']==False]))
 print(len(Data[Data['valid']==True]))
 
-
 # valid string only
 
 Data=Data[Data['valid']==True]
-
 
 '''Detect languages for each text to filter into specific Lang'''
 
@@ -277,8 +219,6 @@ languages = [str(lang).split(':')[0][1:] for lang in languages]
 # Assign the list to a new feature 
 Data['language'] = languages
 
-
-
 # look at Lang detected from our text
 
 Data['language'].value_counts()
@@ -288,13 +228,6 @@ Data['language'].value_counts()
 
 Data=Data[Data['language']=='en']
 
-
-# In[31]:
-
-
-Data=Data[['text','url','year','month','day','dayofweek','hour','minute','second','source','symbols','Polarity','Emotion','language','verified']]
-Data.head(4)
-
 # Percentage of each Emotions for apple only
 
 app_neutral   = apple['text'][ apple['Emotion'] == '0']
@@ -302,7 +235,6 @@ app_positive = apple['text'][ apple['Emotion'] == '1']
 app_negative = apple['text'][ apple['Emotion'] == '2']
 
 print(f' Percentage Positive: {len(app_positive)/len(apple)}\n Percentage Negetive: {len(app_negative)/len(apple)}\n Percentage Neutral : {len(app_neutral)/len(apple)}')
-
 
 # the below function will create a word cloud
 
@@ -324,7 +256,6 @@ def wordcloud_draw(data, color = 'black'):
     plt.axis('off')
     plt.show()
   
-
 print("Most Positive words Frequency")
 wordcloud_draw(app_positive, 'white')
 print("Most Negative words Frequency")
@@ -338,7 +269,6 @@ df_neutral   = Data['text'][ Data['Emotion'] == '0']
 df_positive  = Data['text'][ Data['Emotion'] == '1']
 df_negative  = Data['text'][ Data['Emotion'] == '2']
 
-
 print(f' Percentage Positive: {len(df_positive)/len(Data)}\n Percentage Negetive: {len(df_negative)/len(Data)}\n Percentage Neutral: {len(df_neutral)/len(Data)}')
 
 print("Most Positive words Frequency")
@@ -351,8 +281,7 @@ wordcloud_draw(df_neutral, 'white')
 # Save Dataset
 Data.to_csv("MystockData.csv",index = False)
 
-
-### Model
+# Model
 
 
 def NgramModels(Model , txt, n):
@@ -386,9 +315,6 @@ def NgramModels(Model , txt, n):
     print('Neutral : ', report['0'])
     print('Negative: ', report['2'])
     print('\n --------------------------------------------------------------------------------------------------- \n')
-
-
-
 
 def KNN_Ngram(n):
     
@@ -425,8 +351,6 @@ def KNN_Ngram(n):
         print('Negative: ', report['2'])
         print('\n -------------------------------------------------------------------------------------- \n')
 
-
-
 def TFIDFModels(Model,txt):
     
     x_train, x_test, y_train, y_test = train_test_split(Data['text'], Data['Emotion'], test_size=0.2, random_state=50)
@@ -457,8 +381,6 @@ def TFIDFModels(Model,txt):
     print('Neutral : ', report['0'])
     print('Negative: ', report['2'])
     print('\n -------------------------------------------------------------------------------------- \n')
-
-
 
 def KNN_TFIDF():
     
@@ -493,9 +415,6 @@ def KNN_TFIDF():
         print('Negative: ', report['2'])
         print('\n -------------------------------------------------------------------------------------- \n')
 
-
-
-
 SupportVectorClassifier=svm.SVC(kernel='linear')
 
 LogReg2=NgramModels(Model=LogisticRegression(),txt='Logistic Regression Model : \n ', n=2)
@@ -510,9 +429,6 @@ DecTree3=NgramModels(Model=tree.DecisionTreeClassifier(),txt='Decision Tree Clas
 KNN2=KNN_Ngram(2)
 KNN3=KNN_Ngram(3)
 
-
-
-
 SupportVectorClassifier=svm.SVC(kernel='linear')
 
 print('Models with Tfidf Feature extraction Techniques : \n')
@@ -522,7 +438,3 @@ LogReg=TFIDFModels(Model=LogisticRegression(),txt='Logistic Regression Model : \
 svm=TFIDFModels(Model=SupportVectorClassifier,txt='Support Vector Classifier Model : \n ')
 DecTree=TFIDFModels(Model=tree.DecisionTreeClassifier(),txt='Decision Tree Classifier Model : \n ')
 knn_tfidf=KNN_TFIDF()
-
-
-Result
-
